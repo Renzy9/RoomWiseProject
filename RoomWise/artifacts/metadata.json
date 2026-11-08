@@ -1,0 +1,92 @@
+{
+  "features": [
+    "Temperature",
+    "Humidity",
+    "Light",
+    "CO2"
+  ],
+  "training_accuracy": 0.9927853437094682,
+  "validation_accuracy": 0.9908687068114511,
+  "gap_points": 0.19166368980171322,
+  "test_accuracy": 0.9953109575518263,
+  "test_confusion_matrix": [
+    [
+      2939,
+      16
+    ],
+    [
+      3,
+      1094
+    ]
+  ],
+  "cv": [
+    {
+      "Fold": 1,
+      "Training (%)": 98.99799599198397,
+      "Validation (%)": 96.06031128404669,
+      "Gap (points)": 2.9376847079372794,
+      "Valid": true
+    },
+    {
+      "Fold": 2,
+      "Training (%)": 99.13622902270484,
+      "Validation (%)": 99.12451361867704,
+      "Gap (points)": 0.011715404027796694,
+      "Valid": true
+    },
+    {
+      "Fold": 3,
+      "Training (%)": 99.18140144073347,
+      "Validation (%)": 91.82879377431907,
+      "Gap (points)": 7.3526076664144,
+      "Valid": false
+    },
+    {
+      "Fold": 4,
+      "Training (%)": 99.36305732484077,
+      "Validation (%)": 99.70817120622569,
+      "Gap (points)": 0.3451138813849184,
+      "Valid": true
+    },
+    {
+      "Fold": 5,
+      "Training (%)": 99.45205479452055,
+      "Validation (%)": 98.68677042801556,
+      "Gap (points)": 0.7652843665049858,
+      "Valid": true
+    }
+  ],
+  "criteria_met": true,
+  "all_cv_folds_valid": false,
+  "records": {
+    "total": 20560,
+    "training": 12336,
+    "validation": 4052,
+    "test": 4052,
+    "buffer": 120
+  },
+  "training_ranges": {
+    "Temperature": {
+      "min": 19.0,
+      "max": 24.4083333333333
+    },
+    "Humidity": {
+      "min": 16.745,
+      "max": 39.1175
+    },
+    "Light": {
+      "min": 0.0,
+      "max": 1697.25
+    },
+    "CO2": {
+      "min": 412.75,
+      "max": 2028.5
+    }
+  },
+  "versions": {
+    "sklearn": "1.8.0",
+    "pandas": "3.1.0",
+    "numpy": "2.4.4"
+  },
+  "source": "https://archive.ics.uci.edu/dataset/357/occupancy+detection"
+}
