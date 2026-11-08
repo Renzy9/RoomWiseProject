@@ -18,12 +18,14 @@ function Invoke-PythonProbe {
 }
 
 try {
+    # Select only candidates whose Python version and model packages both work.
+    $probeCode = "import sys; assert sys.version_info >= (3, 11); import flask, pandas, sklearn, numpy; assert sklearn.__version__ == '1.8.0'; print(sys.executable)"
     # Prefer the private runtime shipped with this copy of RoomWise.
     $roomwisePython = $null
     foreach ($relativePath in @('.runtime\python.exe', '.venv\Scripts\python.exe')) {
         $candidate = Join-Path $PSScriptRoot $relativePath
         if (Test-Path -LiteralPath $candidate) {
-            $probe = Invoke-PythonProbe -Executable $candidate -Arguments @('-c', 'import sys; assert sys.version_info >= (3, 11)')
+            $probe = Invoke-PythonProbe -Executable $candidate -Arguments @('-B', '-c', $probeCode)
             if ($probe.ExitCode -eq 0) {
                 $roomwisePython = $candidate
                 break
@@ -34,7 +36,7 @@ try {
     if (-not $roomwisePython) {
         foreach ($commandName in @('py', 'python')) {
             if (-not (Get-Command $commandName -ErrorAction SilentlyContinue)) { continue }
-            $arguments = @('-c', 'import sys; assert sys.version_info >= (3, 11); print(sys.executable)')
+            $arguments = @('-B', '-c', $probeCode)
             if ($commandName -eq 'py') { $arguments = @('-3') + $arguments }
             $probe = Invoke-PythonProbe -Executable $commandName -Arguments $arguments
             $candidate = $probe.Output | Select-Object -Last 1
@@ -45,13 +47,9 @@ try {
         }
     }
     if (-not $roomwisePython) {
-        throw 'Python is missing. Restore the .runtime folder from the fixed RoomWise package, or install Python 3.11 or newer from https://www.python.org/downloads/ and install requirements.txt.'
+        throw 'No usable Python environment was found. RoomWise needs Python 3.11 or newer and the packages in requirements.txt, including scikit-learn 1.8.0. Install them into .venv or restore the complete .runtime folder.'
     }
 
-    & $roomwisePython -B -c "import flask, pandas, sklearn, numpy; assert sklearn.__version__ == '1.8.0', 'RoomWise requires scikit-learn 1.8.0 for its saved model.'"
-    if ($LASTEXITCODE -ne 0) {
-        throw 'Required packages are missing or incompatible. Restore the complete .runtime folder, or install requirements.txt using your Python installation.'
-    }
     Write-Host 'Starting RoomWise at http://127.0.0.1:5080/'
     Write-Host 'Keep this window open while using the website. Press Ctrl+C to stop.'
     & $roomwisePython -B (Join-Path $PSScriptRoot 'app.py')
