@@ -1,0 +1,35 @@
+[
+  {
+    "name": "Recorded empty room",
+    "inputs": {
+      "Temperature": 22.26,
+      "Humidity": 30.0666666666667,
+      "Light": 75.6666666666667,
+      "CO2": 655.0
+    },
+    "actual": 0,
+    "timestamp": "2015-02-15 13:47:59"
+  },
+  {
+    "name": "Recorded occupied room",
+    "inputs": {
+      "Temperature": 20.5,
+      "Humidity": 24.445,
+      "Light": 433.0,
+      "CO2": 835.5
+    },
+    "actual": 1,
+    "timestamp": "2015-02-16 08:43:00"
+  },
+  {
+    "name": "A recorded model mistake",
+    "inputs": {
+      "Temperature": 20.5,
+      "Humidity": 25.05,
+      "Light": 389.0,
+      "CO2": 856.5
+    },
+    "actual": 0,
+    "timestamp": "2015-02-16 08:47:00"
+  }
+]
