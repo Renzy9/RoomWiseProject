@@ -1,0 +1,136 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>RoomWise | Room occupancy prediction</title>
+  <link rel="stylesheet" href="static/style.css">
+  <script src="static/app.js?v=3" defer></script>
+</head>
+<body>
+  <a class="skip-link" href="#prediction-form">Skip to prediction form</a>
+  <main>
+    <header>
+      <a class="brand" href="/">RoomWise<span> / AI for community spaces</span></a>
+      <span id="model-status" class="tag" role="status">Loading model</span>
+    </header>
+    <section class="intro">
+      <p class="eyebrow">ROOM OCCUPANCY PREDICTION</p>
+      <h1>Room Occupancy Prediction</h1>
+      <p>Understand your space with four environmental readings. Enter the room conditions below to get an occupancy estimate from your trained Random Forest model.</p>
+    </section>
+    <ol class="steps" aria-label="Prediction steps"><li><span>1</span> Enter room readings</li><li><span>2</span> Run the model</li><li><span>3</span> Review the result</li></ol>
+    <div class="workspace">
+      <section class="card">
+        <div class="section-heading"><p class="eyebrow">ROOM MEASUREMENTS</p><h2>Enter your room conditions</h2><p>All four readings are required. Use the units shown below each field.</p></div>
+        <div class="sample-panel">
+        <label for="sample">Try a recorded example</label>
+        <div class="sample-row">
+          <select id="sample"><option value="">Choose a sample</option></select>
+          <button id="load" type="button" class="secondary" disabled>Load</button>
+        </div>
+        <p id="sample-note" class="hint">Or enter your own readings below. All four fields are required.</p>
+        </div>
+        <form id="prediction-form" novalidate>
+          <div class="fields">
+            <div>
+              <label for="Temperature">Temperature</label>
+              <input id="Temperature" type="number" step="any" min="-50" max="70" placeholder="23" required aria-describedby="unit-Temperature error-Temperature">
+              <p id="unit-Temperature" class="field-help">Degrees Celsius (°C)</p>
+              <p id="error-Temperature" class="error"></p>
+            </div>
+            <div>
+              <label for="Humidity">Relative humidity</label>
+              <input id="Humidity" type="number" step="any" min="0" max="100" placeholder="35" required aria-describedby="unit-Humidity error-Humidity">
+              <p id="unit-Humidity" class="field-help">Relative humidity (%)</p>
+              <p id="error-Humidity" class="error"></p>
+            </div>
+            <div>
+              <label for="Light">Light level</label>
+              <input id="Light" type="number" step="any" min="0" max="200000" placeholder="400" required aria-describedby="unit-Light error-Light">
+              <p id="unit-Light" class="field-help">Illuminance (lux)</p>
+              <p id="error-Light" class="error"></p>
+            </div>
+            <div>
+              <label for="CO2">Carbon dioxide</label>
+              <input id="CO2" type="number" step="any" min="200" max="100000" placeholder="900" required aria-describedby="unit-CO2 error-CO2">
+              <p id="unit-CO2" class="field-help">Carbon dioxide (ppm)</p>
+              <p id="error-CO2" class="error"></p>
+            </div>
+          </div>
+          <div class="actions">
+            <button id="predict" type="submit" disabled>Predict occupancy</button>
+            <button id="reset" type="button" class="secondary">Clear</button>
+          </div>
+          <p id="connection-status" class="error" role="status">Connecting to the trained model…</p>
+          <div id="connection-actions" class="actions" hidden>
+            <button id="retry-connection" type="button" class="secondary">Retry connection</button>
+            <a href="http://127.0.0.1:5080/">Open RoomWise locally</a>
+          </div>
+          <p id="form-error" class="error" role="alert"></p>
+        </form>
+      </section>
+      <section id="results" class="card result" aria-labelledby="result-heading" hidden>
+        <div class="section-heading"><p class="eyebrow">YOUR RESULT</p><h2 id="result-heading" tabindex="-1">Occupancy prediction</h2></div>
+        <div class="result-highlight" aria-live="polite" aria-atomic="true">
+        <span class="result-label">The model predicts</span>
+        <h2 id="prediction">Waiting for readings</h2>
+        <p id="suggestion">Load a sample or enter four measurements, then select Predict occupancy.</p>
+        <p id="actual" class="actual" hidden></p>
+        <p id="warnings" class="warning" hidden></p>
+        </div>
+        <div class="result-section">
+          <h3>Your input summary</h3>
+          <p class="hint">The exact readings used for this prediction.</p>
+          <dl class="input-summary">
+            <div><dt>Temperature</dt><dd id="summary-Temperature">—</dd></div>
+            <div><dt>Humidity</dt><dd id="summary-Humidity">—</dd></div>
+            <div><dt>Light</dt><dd id="summary-Light">—</dd></div>
+            <div><dt>CO₂</dt><dd id="summary-CO2">—</dd></div>
+          </dl>
+        </div>
+        <div class="result-section">
+          <h3>How the model scores each outcome</h3>
+          <p class="hint">Average class probabilities across the 200 trained trees.</p>
+          <div class="probability-row"><div><label for="probability-occupied">Occupied</label><strong id="score-occupied">—</strong></div><meter id="probability-occupied" min="0" max="1" value="0">0</meter></div>
+          <div class="probability-row"><div><label for="probability-unoccupied">Unoccupied</label><strong id="score-unoccupied">—</strong></div><meter id="probability-unoccupied" min="0" max="1" value="0">0</meter></div>
+          <p class="hint">These are model scores, not guaranteed certainty or accuracy on a new room.</p>
+        </div>
+        <div class="result-actions"><button id="try-again" type="button" class="secondary">Try another prediction</button></div>
+        <p class="result-note">Decision support for staff. This prototype does not count people or control appliances.</p>
+      </section>
+    </div>
+    <section class="card units-guide" aria-labelledby="units-title">
+      <p class="eyebrow">BEFORE YOU PREDICT</p><h2 id="units-title">Input units guide</h2>
+      <div class="guide-grid">
+        <div><h3>Temperature · °C</h3><p>Enter the air temperature in Celsius, not Fahrenheit.</p></div>
+        <div><h3>Humidity · %</h3><p>Enter relative humidity as a percentage, such as 35 for 35%.</p></div>
+        <div><h3>Light · lux</h3><p>Use a light sensor's illuminance reading, not a bulb's wattage.</p></div>
+        <div><h3>CO₂ · ppm</h3><p>Use the carbon dioxide reading in parts per million.</p></div>
+      </div>
+      <p class="hint">Take readings from the same room at the same time. You can also use the recorded examples for practice.</p>
+    </section>
+    <details class="card evidence">
+      <summary>Model results & how it works</summary>
+      <dl class="metrics">
+        <div><dt>Training accuracy</dt><dd id="training">—</dd></div>
+        <div><dt>Validation accuracy</dt><dd id="validation">—</dd></div>
+        <div><dt>Accuracy gap</dt><dd id="gap">—</dd></div>
+        <div><dt>Test accuracy</dt><dd id="test">—</dd></div>
+      </dl>
+      <p>The notebook trains on earlier readings and evaluates later readings. For a prediction, the same scaling is applied and the 200 trained trees combine their class probabilities.</p>
+      <p><strong>Evaluation limit:</strong> the main validation split meets the class requirements. One of the five chronological cross-validation folds exceeds the 5-point gap limit.</p>
+      <div class="table-wrap">
+        <table>
+          <caption>Five chronological cross-validation folds</caption>
+          <thead><tr><th>Fold</th><th>Training</th><th>Validation</th><th>Gap</th><th>Meets criteria</th></tr></thead>
+          <tbody id="cv"></tbody>
+        </table>
+      </div>
+      <p>Source: 20,560 readings from one office room in the <a href="https://archive.ics.uci.edu/dataset/357/occupancy+detection" target="_blank" rel="noreferrer">UCI Occupancy Detection dataset</a>. Performance in local classrooms and actual electricity savings still need to be measured.</p>
+    </details>
+    <footer><p>RoomWise · Random Forest · Educational prototype</p><p class="reference-credit">Interface flow inspired by the <a href="https://github.com/joseph-alejo/crop-random-forest-model" target="_blank" rel="noreferrer">Crop Recommendation System</a>. Adapted for four-input room occupancy prediction.</p></footer>
+    <noscript><p class="error">Enable JavaScript in your browser to use the trained model.</p></noscript>
+  </main>
+</body>
+</html>
