@@ -113,7 +113,7 @@ for (const name of fields) {
 }
 
 function resetForm() {
-  element('prediction-form').reset();
+  HTMLFormElement.prototype.reset.call(element('prediction-form'));
   element('sample').value = '';
   selectedSample = null;
   clearResult();
